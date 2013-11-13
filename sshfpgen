@@ -1,0 +1,98 @@
+#!/bin/sh
+
+# Copyright (c) 2013, John W. O'Brien
+# See the accompanying LICENSE file for usage
+
+ssh_dir="/etc/ssh"
+ssh_key_tmpl_prefix="ssh_host_"
+ssh_key_tmpl_suffix="_key.pub"
+
+zone="$(hostname)."
+
+# Extract a key algorithm name from a key filename
+uses_algo ()
+{
+    remain=${1##$ssh_dir/$ssh_key_tmpl_prefix}
+    echo ${remain%%$ssh_key_tmpl_suffix}
+}
+
+
+# Map a key algorithm name to IANA codepoint
+algo_codepoint ()
+{
+    case "$1" in
+        [rR][sS][aA])
+            echo "1"
+        ;;
+        [dD][sS][aA])
+            echo "2"
+        ;;
+        [eE][cC][dD][sS][aA])
+            echo "3"
+        ;;
+        *)
+            echo "-1"
+    esac
+}
+
+
+# Map a fingerprint (message digest) name to IANA codepoint
+known_fngp="sha1 sha256"
+fngp_codepoint ()
+{
+    case "$1" in
+        [sS][hH][aA]1)
+            echo "1"
+        ;;
+        [sS][hH][aA]256)
+            echo "2"
+        ;;
+        *)
+            echo "-1"
+        ;;
+    esac
+}
+
+
+# Compute the specified fingerprint from a given file
+fingerprint ()
+{
+    pathname=$1
+    dgst=$2
+
+    cut -d ' ' -f 2 $cut_args $pathname \
+        | openssl base64 -d -A \
+        | openssl dgst -${dgst} -binary \
+        | xxd -p
+}
+
+# Build the parts into a complete RR
+formatted_sshfp_rr ()
+{
+    zone=$1
+    algo=$2
+    fngp=$3
+    data=$4
+
+    echo "$zone SSHFP $algo $fngp $data"
+}
+
+
+if [ ! -d "${ssh_dir}" -o ! -r "${ssh_dir}" ]; then
+    echo "ERROR: Found no config directory at ${ssh_etc}"
+    exit 1
+fi
+
+for pubkey in ${ssh_dir}/${ssh_key_tmpl_prefix}*${ssh_key_tmpl_suffix}; do
+    algo_name=$(uses_algo $pubkey)
+    algo_num=$(algo_codepoint $algo_name)
+    if [ "${algo_num}" == "-1" ]; then
+        echo "WARNING: Skipping key with unknown algorithm '${algo_name}'"
+    else
+        for fngp_name in ${known_fngp}; do
+        fngp_num=$(fngp_codepoint $fngp_name)
+        fngp=$(fingerprint $pubkey $fngp_name)
+        formatted_sshfp_rr $zone $algo_num $fngp_num $fngp
+        done
+    fi
+done
