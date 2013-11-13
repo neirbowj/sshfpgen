@@ -60,7 +60,7 @@ fingerprint ()
     pathname=$1
     dgst=$2
 
-    cut -d ' ' -f 2 $cut_args $pathname \
+    cut -d ' ' -f 2 $pathname \
         | openssl base64 -d -A \
         | openssl dgst -${dgst} -binary \
         | xxd -p
