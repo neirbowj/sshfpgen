@@ -63,7 +63,7 @@ fingerprint ()
     cut -d ' ' -f 2 $pathname \
         | openssl base64 -d -A \
         | openssl dgst -${dgst} -binary \
-        | xxd -p
+        | xxd -p -c 64
 }
 
 # Build the parts into a complete RR
