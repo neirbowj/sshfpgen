@@ -92,6 +92,7 @@ for pubkey in ${ssh_dir}/${ssh_key_tmpl_prefix}*${ssh_key_tmpl_suffix}; do
         for fngp_name in ${known_fngp}; do
         fngp_num=$(fngp_codepoint $fngp_name)
         fngp=$(fingerprint $pubkey $fngp_name)
+        echo "; $algo_name $fngp_name"
         formatted_sshfp_rr $zone $algo_num $fngp_num $fngp
         done
     fi
