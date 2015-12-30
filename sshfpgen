@@ -33,6 +33,9 @@ algo_codepoint ()
         [eE][cC][dD][sS][aA])
             echo "3"
         ;;
+        [eE][dD]25519)
+            echo "4"
+        ;;
         *)
             echo "-1"
     esac
