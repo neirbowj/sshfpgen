@@ -3,6 +3,9 @@
 # Copyright (c) 2013, John W. O'Brien
 # See the accompanying LICENSE file for usage
 
+# IANA code points
+# https://www.iana.org/assignments/dns-sshfp-rr-parameters/
+
 ssh_dir="/etc/ssh"
 ssh_key_tmpl_prefix="ssh_host_"
 ssh_key_tmpl_suffix="_key.pub"
