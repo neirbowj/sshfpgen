@@ -24,7 +24,7 @@ for all you could ever want to know about this DNS RR type.
 This script depends upon
 
 *   OpenSSL --- Provides cryptographic hash (message digest) computation
-*   xxd --- Converts between binary and hexidecimal encoding
+*   xxd --- Converts between binary and hexidecimal encoding (ships with vim)
 
 Per the OpenSSH convention, this script will seek the following files as input:
 
